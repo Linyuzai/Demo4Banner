@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="Banner">
+        <attr name="banner_interval" format="integer" />
+        <attr name="manual_duration" format="integer" />
+        <attr name="auto_duration" format="integer" />
+    </declare-styleable>
+    <declare-styleable name="HintBanner">
+        <attr name="hint_banner_interval" format="integer" />
+        <attr name="hint_manual_duration" format="integer" />
+        <attr name="hint_auto_duration" format="integer" />
+    </declare-styleable>
+    <declare-styleable name="Indicator">
+        <attr name="banner_anim" format="boolean" />
+        <attr name="indicator_anim" format="boolean" />
+        <attr name="cursor_anim" format="boolean" />
+    </declare-styleable>
+</resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:hint="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_hint_banner"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.linyuzai.demo4banner.HintBannerActivity">
+
+    <com.linyuzai.banner.hint.HintBanner
+        android:id="@+id/hint_banner1"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="20dp"
+        hint:hint_auto_duration="750"
+        hint:hint_banner_interval="3000"
+        hint:hint_manual_duration="250" />
+
+    <com.linyuzai.banner.hint.HintBanner
+        android:id="@+id/hint_banner2"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="20dp"
+        hint:hint_auto_duration="750"
+        hint:hint_banner_interval="3000"
+        hint:hint_manual_duration="250" />
+</LinearLayout>
