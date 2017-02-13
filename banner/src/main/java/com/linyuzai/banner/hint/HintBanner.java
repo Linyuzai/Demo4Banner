@@ -21,11 +21,13 @@ import com.linyuzai.banner.indicator.Indicator;
 
 /**
  * Created by Administrator on 2017/1/11 0011.
+ *
+ * @author Linyuzai
  */
 
 public class HintBanner extends RelativeLayout implements IHintBanner {
     private static final String TAG = "HintBanner";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private LinearLayout mHintGroup;
     private HintViewCreator mCreator;

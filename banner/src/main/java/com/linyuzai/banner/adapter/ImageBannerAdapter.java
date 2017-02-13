@@ -37,7 +37,7 @@ public abstract class ImageBannerAdapter extends BannerAdapter {
      * 绑定数据
      *
      * @param image    需要绑定数据的ImageView
-     * @param position HintView item的pisition
+     * @param position HintView item的position
      */
     public abstract void onBindImage(ImageView image, int position);
 }

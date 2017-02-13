@@ -31,7 +31,7 @@ import com.linyuzai.banner.ViewUtils;
 
 public class Indicator extends HorizontalScrollView {
     private static final String TAG = "Indicator";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private RelativeLayout mGroup;//HorizontalScrollView的直接子View
     private CursorView mCursor;//可滑动的指示器
