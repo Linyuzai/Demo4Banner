@@ -142,6 +142,7 @@ public class Banner extends ViewPager implements IBanner {
             //完成翻页时，发送自动翻页消息
             if (isLoop && state == ViewPager.SCROLL_STATE_IDLE) {
                 if (isBannerAdapter2()) {
+                    //需要间隔时间减去自动滚动的时间
                     if (mCurrentPosition == 0)
                         setCurrentItemAndScroll(((BannerAdapter2) getAdapter()).getBannerCount(), mBannerInterval - mAutoDuration);
                     else if (mCurrentPosition == ((BannerAdapter2) getAdapter()).getBannerCount() + 1)
