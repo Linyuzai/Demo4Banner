@@ -143,9 +143,9 @@ public class Banner extends ViewPager implements IBanner {
             if (isLoop && state == ViewPager.SCROLL_STATE_IDLE) {
                 if (isBannerAdapter2()) {
                     if (mCurrentPosition == 0)
-                        setCurrentItem(((BannerAdapter2) getAdapter()).getBannerCount(), false);
+                        setCurrentItemAndScroll(((BannerAdapter2) getAdapter()).getBannerCount(), mBannerInterval - mAutoDuration);
                     else if (mCurrentPosition == ((BannerAdapter2) getAdapter()).getBannerCount() + 1)
-                        setCurrentItem(1, false);
+                        setCurrentItemAndScroll(1, mBannerInterval - mAutoDuration);
                 }
                 sendToScroll();
             }
@@ -193,11 +193,15 @@ public class Banner extends ViewPager implements IBanner {
     }
 
     private void sendToScroll() {
+        sendToScroll(mBannerInterval);
+    }
+
+    private void sendToScroll(int interval) {
         mHandler.removeMessages(0);//移除所有消息
         isManual = false;//非手动
         //发送间隔mBannerInterval的翻页命令
         if (isAutoScroll)
-            startAutoScroll(mBannerInterval);
+            startAutoScroll(interval);
     }
 
     /**
@@ -217,18 +221,15 @@ public class Banner extends ViewPager implements IBanner {
         }
     }
 
-    @Override
-    public void setCurrentItem(int item, boolean smoothScroll) {
-        super.setCurrentItem(item, smoothScroll);
-        if (!smoothScroll) {
-            sendToScroll();
-        }
+    public void setCurrentItemAndScroll(int item, int interval) {
+        super.setCurrentItem(item, false);
+        sendToScroll(interval);
     }
 
     @Override
     public void updateBannerAfterDataSetChanged() {
         if (isBannerAdapter2())
-            setCurrentItem(1, false);
+            setCurrentItemAndScroll(1, mBannerInterval);
     }
 
     /**
