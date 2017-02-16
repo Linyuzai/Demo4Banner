@@ -121,7 +121,6 @@ public class Banner extends ViewPager implements IBanner {
             int modifyPosition = getModifyPosition(position);
             if (DEBUG)
                 Log.d(TAG, "onPageSelected:" + position + ",modifyPosition:" + modifyPosition);
-            mCurrentPosition = position;
             if (isLoop && isBannerAdapter()) {
                 if (position == 0)
                     resetPosition(0);
@@ -129,11 +128,11 @@ public class Banner extends ViewPager implements IBanner {
                     resetPosition(modifyPosition);
             }
             //如果绑定的indicator进行联动
-            boolean isIgnore = isIgnorePosition(position);
-            if (mIndicator != null && !isIgnore)
+            if (mIndicator != null)
                 mIndicator.setCurrentIndicator(modifyPosition);
-            if (mBannerChangeListener != null && !isIgnore)
+            if (mBannerChangeListener != null && !isIgnorePosition(position))
                 mBannerChangeListener.onBannerSelected(modifyPosition);
+            mCurrentPosition = position;
         }
 
         @Override
@@ -256,7 +255,8 @@ public class Banner extends ViewPager implements IBanner {
     }
 
     private boolean isIgnorePosition(int position) {
-        return isBannerAdapter2() && isLoop && (position == 0 || position == getAdapter().getCount() - 1);
+        return isBannerAdapter2() && isLoop && (position == getAdapter().getCount() - 2 && mCurrentPosition == 0 ||
+                mCurrentPosition == getAdapter().getCount() - 1 && position == 1);
     }
 
     @Override

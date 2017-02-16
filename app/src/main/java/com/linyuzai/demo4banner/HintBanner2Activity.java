@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import com.linyuzai.banner.ViewHolder;
 import com.linyuzai.banner.ViewLocation;
 import com.linyuzai.banner.creator.ColorHintViewCreator;
 import com.linyuzai.banner.hint.HintBanner;
+import com.linyuzai.banner.hint.OnHintBannerChangeListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,6 +123,23 @@ public class HintBanner2Activity extends AppCompatActivity {
             @Override
             public int getSpacing() {
                 return 5;
+            }
+        });
+
+        banner.setOnHintBannerChangeListener(new OnHintBannerChangeListener() {
+            @Override
+            public void onHintBannerScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onHintBannerSelected(int position) {
+                Log.i("onHintBannerSelected", "" + position);
+            }
+
+            @Override
+            public void onHintBannerScrollStateChanged(int state) {
+
             }
         });
 
