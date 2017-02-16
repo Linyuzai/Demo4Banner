@@ -141,7 +141,7 @@ public class Banner extends ViewPager implements IBanner {
             if (DEBUG)
                 Log.d(TAG, "onPageScrollStateChanged:" + state);
             //完成翻页时，发送自动翻页消息
-            if (state == ViewPager.SCROLL_STATE_IDLE) {
+            if (isLoop && state == ViewPager.SCROLL_STATE_IDLE) {
                 if (isBannerAdapter2()) {
                     if (mCurrentPosition == 0)
                         setCurrentItem(((BannerAdapter2) getAdapter()).getBannerCount(), false);
