@@ -9,7 +9,7 @@ import com.linyuzai.banner.ViewHolder;
 /**
  * Created by Administrator on 2017/1/11 0011.
  *
- * @author Linyuza
+ * @author Linyuzai
  */
 
 public abstract class ImageBannerAdapter extends BannerAdapter {

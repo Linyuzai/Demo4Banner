@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import java.util.LinkedList;
 
 /**
+ * 提供循环播放功能的adapter，支持数据更新
+ * <p>
  * Created by Administrator on 2017/2/14 0014.
  *
  * @author Linyuzai
