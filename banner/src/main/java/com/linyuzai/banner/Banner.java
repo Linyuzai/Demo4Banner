@@ -39,6 +39,10 @@ public class Banner extends ViewPager implements IBanner {
     private int mManualDuration = DEFAULT_DURATION;//手动滑动Banner时翻页时间
     private int mAutoDuration = 3 * DEFAULT_DURATION;//自动滚动时的翻页时间
 
+    private int mCurrentPosition;//当前position，支持BannerAdapter2
+
+    private boolean isStationary;//是否禁止滑动
+
     private boolean isLoop;//是否循环
     private boolean isManual;//当前是否是手动触摸
     private boolean isAutoScroll;//是否自动播放
@@ -47,6 +51,7 @@ public class Banner extends ViewPager implements IBanner {
     private BannerHandler mHandler;
 
     private OnBannerChangeListener mBannerChangeListener;
+    private OnBannerItemClickListener mBannerItemClickListener;
 
     /**
      * 自动播放的消息循环
@@ -107,7 +112,7 @@ public class Banner extends ViewPager implements IBanner {
             if (DEBUG)
                 Log.d(TAG, "onPageScrolled:" + position + ",positionOffset:" + positionOffset
                         + ",positionOffsetPixels:" + positionOffsetPixels + ",modifyPosition:" + modifyPosition);
-            if (mBannerChangeListener != null)
+            if (mBannerChangeListener != null && !isIgnorePosition(position))
                 mBannerChangeListener.onBannerScrolled(modifyPosition, positionOffset, positionOffsetPixels);
         }
 
@@ -116,10 +121,18 @@ public class Banner extends ViewPager implements IBanner {
             int modifyPosition = getModifyPosition(position);
             if (DEBUG)
                 Log.d(TAG, "onPageSelected:" + position + ",modifyPosition:" + modifyPosition);
+            mCurrentPosition = position;
+            if (isLoop && isBannerAdapter()) {
+                if (position == 0)
+                    resetPosition(0);
+                if (position == Integer.MAX_VALUE - 1)
+                    resetPosition(modifyPosition);
+            }
             //如果绑定的indicator进行联动
-            if (mIndicator != null)
-                mIndicator.setCurrentIndicator(position);
-            if (mBannerChangeListener != null)
+            boolean isIgnore = isIgnorePosition(position);
+            if (mIndicator != null && !isIgnore)
+                mIndicator.setCurrentIndicator(modifyPosition);
+            if (mBannerChangeListener != null && !isIgnore)
                 mBannerChangeListener.onBannerSelected(modifyPosition);
         }
 
@@ -129,11 +142,13 @@ public class Banner extends ViewPager implements IBanner {
                 Log.d(TAG, "onPageScrollStateChanged:" + state);
             //完成翻页时，发送自动翻页消息
             if (state == ViewPager.SCROLL_STATE_IDLE) {
-                mHandler.removeMessages(0);//移除所有消息
-                isManual = false;//非手动
-                //发送间隔mBannerInterval的翻页命令
-                if (isAutoScroll)
-                    startAutoScroll(mBannerInterval);
+                if (isBannerAdapter2()) {
+                    if (mCurrentPosition == 0)
+                        setCurrentItem(((BannerAdapter2) getAdapter()).getBannerCount(), false);
+                    else if (mCurrentPosition == ((BannerAdapter2) getAdapter()).getBannerCount() + 1)
+                        setCurrentItem(1, false);
+                }
+                sendToScroll();
             }
             if (mBannerChangeListener != null)
                 mBannerChangeListener.onBannerScrollStateChanged(state);
@@ -156,6 +171,7 @@ public class Banner extends ViewPager implements IBanner {
             mBannerInterval = a.getInt(R.styleable.Banner_banner_interval, mBannerInterval);
             mManualDuration = a.getInt(R.styleable.Banner_manual_duration, mManualDuration);
             mAutoDuration = a.getInt(R.styleable.Banner_auto_duration, mAutoDuration);
+            isStationary = a.getBoolean(R.styleable.Banner_stationary, isStationary);
             a.recycle();
         }
         addOnPageChangeListener(new OnPageChangeListenerImpl());
@@ -177,12 +193,22 @@ public class Banner extends ViewPager implements IBanner {
         }
     }
 
+    private void sendToScroll() {
+        mHandler.removeMessages(0);//移除所有消息
+        isManual = false;//非手动
+        //发送间隔mBannerInterval的翻页命令
+        if (isAutoScroll)
+            startAutoScroll(mBannerInterval);
+    }
+
     /**
      * 指定当前的position不会触发OnPageChangeListener
      *
      * @param index position
      */
     private void setCurrentPosition(int index) {
+        if (DEBUG)
+            Log.d(TAG, "setCurrentPosition---->index:" + index);
         try {
             Field field = ViewPager.class.getDeclaredField("mCurItem");
             field.setAccessible(true);
@@ -190,6 +216,20 @@ public class Banner extends ViewPager implements IBanner {
         } catch (Exception e) {
             Log.w(TAG, "setCurrentPosition is failed", e);
         }
+    }
+
+    @Override
+    public void setCurrentItem(int item, boolean smoothScroll) {
+        super.setCurrentItem(item, smoothScroll);
+        if (!smoothScroll) {
+            sendToScroll();
+        }
+    }
+
+    @Override
+    public void updateBannerAfterDataSetChanged() {
+        if (isBannerAdapter2())
+            setCurrentItem(1, false);
     }
 
     /**
@@ -201,9 +241,22 @@ public class Banner extends ViewPager implements IBanner {
     private int getModifyPosition(int position) {
         int modifyPosition = position;
         //如果可循环并且Adapter为BannerAdapter，计算相对应的position
-        if (isLoop && getAdapter() instanceof BannerAdapter)
-            modifyPosition = position % ((BannerAdapter) getAdapter()).getBannerCount();
+        if (isLoop) {
+            if (getAdapter() instanceof BannerAdapter)
+                modifyPosition = position % ((BannerAdapter) getAdapter()).getBannerCount();
+            if (getAdapter() instanceof BannerAdapter2) {
+                if (position == 0)
+                    modifyPosition = ((BannerAdapter2) getAdapter()).getBannerCount();
+                else if (position == ((BannerAdapter2) getAdapter()).getBannerCount() + 1)
+                    modifyPosition = 1;
+                modifyPosition--;
+            }
+        }
         return modifyPosition;
+    }
+
+    private boolean isIgnorePosition(int position) {
+        return isBannerAdapter2() && (position == 0 || position == getAdapter().getCount() - 1);
     }
 
     @Override
@@ -226,13 +279,35 @@ public class Banner extends ViewPager implements IBanner {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        //打断自动播放
-        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                InterceptAutoScroll();
+                if (DEBUG)
+                    Log.d(TAG, "onInterceptTouchEvent:ACTION_DOWN");
+                break;
+            case MotionEvent.ACTION_UP:
+                sendToScroll();
+                if (DEBUG)
+                    Log.d(TAG, "onInterceptTouchEvent:ACTION_UP");
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                sendToScroll();
+                if (DEBUG)
+                    Log.d(TAG, "onInterceptTouchEvent:ACTION_CANCEL");
+                break;
+        }
+        /*//打断自动播放
+        if (!isStationary && ev.getAction() == MotionEvent.ACTION_DOWN) {
             isManual = true;//手动
             mScroller.setDuration(mManualDuration);//改变翻页的时间
-        }
-        return super.onTouchEvent(ev);
+        }*/
+        return !isStationary && super.onInterceptTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        return !isStationary && super.onTouchEvent(ev);
     }
 
     /**
@@ -257,6 +332,23 @@ public class Banner extends ViewPager implements IBanner {
         stopAutoScroll();
         super.setAdapter(adapter);
         initLoopIfNeed();
+        setOnBannerItemClickListener(mBannerItemClickListener);
+    }
+
+    /**
+     * @return 是否禁止滑动
+     */
+    public boolean isStationary() {
+        return isStationary;
+    }
+
+    /**
+     * 设置禁止滑动
+     *
+     * @param stationary 是否禁止滑动
+     */
+    public void setStationary(boolean stationary) {
+        isStationary = stationary;
     }
 
     @Override
@@ -266,6 +358,8 @@ public class Banner extends ViewPager implements IBanner {
 
     @Override
     public void startAutoScroll(long delay) {
+        if (isStationary)
+            return;
         isAutoScroll = true;
         mHandler.sendEmptyMessageDelayed(0, delay);
     }
@@ -299,6 +393,8 @@ public class Banner extends ViewPager implements IBanner {
             return NO_ADAPTER;
         if (adapter instanceof BannerAdapter)
             return ((BannerAdapter) adapter).getBannerCount();
+        else if (adapter instanceof BannerAdapter2)
+            return ((BannerAdapter2) adapter).getBannerCount();
         else
             return adapter.getCount();
     }
@@ -313,17 +409,34 @@ public class Banner extends ViewPager implements IBanner {
         this.mBannerInterval = interval;
     }
 
-    /**
-     * 如果可循环，初始化循环位置
-     */
     private void initLoopIfNeed() {
-        //this.isLoop = loop;
         if (getAdapter() instanceof BannerAdapter) {
             if (isLoop = ((BannerAdapter) getAdapter()).isLoop()) {
                 int mOffsetPosition = Integer.MAX_VALUE / 2 % ((BannerAdapter) getAdapter()).getBannerCount();
                 setCurrentPosition(Integer.MAX_VALUE / 2 - mOffsetPosition);
             }
-            //setCurrentPosition(getCurrentItem() % ((BannerAdapter) getAdapter()).getBannerCount());
+        } else if (getAdapter() instanceof BannerAdapter2) {
+            if (isLoop = ((BannerAdapter2) getAdapter()).isLoop()) {
+                setCurrentItem(1, false);
+            }
+        }
+    }
+
+    private void InterceptAutoScroll() {
+        isManual = true;//手动
+        mScroller.setDuration(mManualDuration);//改变翻页的时间
+    }
+
+    /**
+     * 重定位循环位置
+     */
+    @Deprecated
+    private void resetPosition(int position) {
+        if (isLoop) {
+            int mOffsetPosition = Integer.MAX_VALUE / 2 % ((BannerAdapter) getAdapter()).getBannerCount();
+            setCurrentPosition(Integer.MAX_VALUE / 2 - mOffsetPosition + position);
+            setCurrentItem(Integer.MAX_VALUE / 2 - mOffsetPosition + position, false);
+            sendToScroll();
         }
     }
 
@@ -348,6 +461,20 @@ public class Banner extends ViewPager implements IBanner {
         mScroller.setDuration(duration);
     }
 
+    @Override
+    public void setOnBannerItemClickListener(OnBannerItemClickListener onBannerItemClickListener) {
+        mBannerItemClickListener = onBannerItemClickListener;
+        if (isBannerAdapter())
+            ((BannerAdapter) getAdapter()).mBannerItemClickListener = mBannerItemClickListener;
+        else if (isBannerAdapter2())
+            ((BannerAdapter2) getAdapter()).mBannerItemClickListener = mBannerItemClickListener;
+    }
+
+    @Override
+    public OnBannerItemClickListener getOnBannerItemClickListener() {
+        return mBannerItemClickListener;
+    }
+
     /**
      * 得到OnBannerChangeListener
      *
@@ -364,5 +491,13 @@ public class Banner extends ViewPager implements IBanner {
      */
     public void setOnBannerChangeListener(OnBannerChangeListener listener) {
         this.mBannerChangeListener = listener;
+    }
+
+    private boolean isBannerAdapter() {
+        return getAdapter() != null && getAdapter() instanceof BannerAdapter;
+    }
+
+    private boolean isBannerAdapter2() {
+        return getAdapter() != null && getAdapter() instanceof BannerAdapter2;
     }
 }

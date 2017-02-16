@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
 
+import com.linyuzai.banner.ViewLocation;
 import com.linyuzai.banner.adapter.ImageBannerAdapter;
 import com.linyuzai.banner.creator.ColorHintViewCreator;
 import com.linyuzai.banner.creator.DrawableHintViewCreator;
@@ -88,8 +89,10 @@ public class HintBannerActivity extends AppCompatActivity {
             }
 
             @Override
-            public int getMarginBottom() {
-                return 10;
+            public ViewLocation getViewLocation() {
+                ViewLocation location = ViewLocation.getDefaultViewLocation();
+                location.setMarginBottom(10);
+                return location;
             }
 
             @Override
@@ -107,11 +110,6 @@ public class HintBannerActivity extends AppCompatActivity {
             @Override
             public Drawable getHintResetDrawable() {
                 return getResources().getDrawable(R.mipmap.point_small);
-            }
-
-            @Override
-            public int getMarginBottom() {
-                return 10;
             }
 
             @Override

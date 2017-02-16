@@ -7,7 +7,7 @@ import com.linyuzai.banner.indicator.Indicator;
 /**
  * Created by Administrator on 2017/1/11 0011.
  *
- * @author Linyuza
+ * @author Linyuzai
  */
 
 public interface IBanner {
@@ -97,4 +97,21 @@ public interface IBanner {
      * @param mAutoDuration 需要设置的翻页时间
      */
     void setAutoDuration(int mAutoDuration);
+
+    /**
+     * notifyDataSetChanged之后调用
+     */
+    void updateBannerAfterDataSetChanged();
+
+    /**
+     * 设置点击事件监听器
+     *
+     * @param onBannerItemClickListener 点击事件监听器
+     */
+    void setOnBannerItemClickListener(OnBannerItemClickListener onBannerItemClickListener);
+
+    /**
+     * @return 得到当前点击事件监听器
+     */
+    OnBannerItemClickListener getOnBannerItemClickListener();
 }

@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.linyuzai.banner.Banner;
 import com.linyuzai.banner.ViewHolder;
+import com.linyuzai.banner.ViewLocation;
 import com.linyuzai.banner.indicator.SimpleCursorCreator;
 import com.linyuzai.banner.indicator.BaseIndicatorAdapter;
 import com.linyuzai.banner.indicator.Indicator;
@@ -90,8 +91,10 @@ public class IndicatorBanner2Activity extends AppCompatActivity {
             }
 
             @Override
-            public int getGravity() {
-                return Gravity.TOP;
+            public ViewLocation getViewLocation() {
+                ViewLocation location = ViewLocation.getDefaultViewLocation();
+                location.setVerticalGravity(ViewLocation.VerticalGravity.TOP);
+                return location;
             }
 
             @Override

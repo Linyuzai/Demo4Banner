@@ -7,33 +7,34 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.linyuzai.banner.Banner;
-import com.linyuzai.banner.BannerAdapter;
+import com.linyuzai.banner.BannerAdapter2;
 import com.linyuzai.banner.OnBannerChangeListener;
-import com.linyuzai.banner.OnBannerItemClickListener;
 import com.linyuzai.banner.ViewHolder;
-import com.linyuzai.banner.adapter.ImageBannerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BannerActivity extends AppCompatActivity {
+public class Banner2Activity extends AppCompatActivity {
 
-    Banner banner1, banner2;
+    Button button1, button2;
+    Banner banner;
     Drawable hz1, hz2, hz3, jj1, jj2, jj3;
     List<Drawable> drawables;
-    BannerAdapter adapter;
+    BannerAdapter2 adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_banner);
+        setContentView(R.layout.activity_banner2);
 
-        banner1 = (Banner) findViewById(R.id.banner1);
-        banner2 = (Banner) findViewById(R.id.banner2);
+        banner = (Banner) findViewById(R.id.banner);
+        button1 = (Button) findViewById(R.id.bt_add);
+        button2 = (Button) findViewById(R.id.bt_remove);
 
         hz1 = getResources().getDrawable(R.mipmap.hz01);
         hz2 = getResources().getDrawable(R.mipmap.hz02);
@@ -58,8 +59,8 @@ public class BannerActivity extends AppCompatActivity {
                 text = (TextView) itemView.findViewById(R.id.text_position);
             }
         }
-        banner1.setAdapter(adapter = new BannerAdapter<MyViewHolder>() {
 
+        banner.setAdapter(adapter = new BannerAdapter2<MyViewHolder>() {
             @Override
             public int getBannerCount() {
                 return drawables.size();
@@ -73,7 +74,6 @@ public class BannerActivity extends AppCompatActivity {
 
             @Override
             public void onBindViewHolder(MyViewHolder holder, int position) {
-                //holder.text.setText(String.valueOf(position));
                 holder.image.setImageDrawable(drawables.get(position));
             }
 
@@ -82,63 +82,42 @@ public class BannerActivity extends AppCompatActivity {
                 return true;
             }
         });
-        banner1.setOnBannerItemClickListener(new OnBannerItemClickListener() {
-            @Override
-            public void onBannerItemClick(ViewHolder holder, int position) {
-                Log.i("onBannerItemClick", holder + "," + position);
-            }
-        });
-        banner1.setOnBannerChangeListener(new OnBannerChangeListener() {
+
+        banner.setOnBannerChangeListener(new OnBannerChangeListener() {
             @Override
             public void onBannerScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                Log.i("banner1", "onBannerScrolled:" + position);
+
             }
 
             @Override
             public void onBannerSelected(int position) {
-                Log.i("banner1", "onBannerSelected:" + position);
+                //Log.i("qwert", "onBannerSelected:" + position);
             }
 
             @Override
             public void onBannerScrollStateChanged(int state) {
-                Log.i("banner1", "onBannerScrollStateChanged:" + state);
+
             }
         });
-        banner1.startAutoScroll(2000);
 
-        banner2.setAdapter(new ImageBannerAdapter() {
-            @Override
-            public void onImageViewCreated(ImageView view) {
-                view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            }
+        banner.startAutoScroll(2000);
 
+        button1.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onBindImage(ImageView image, int position) {
-                switch (position) {
-                    case 0:
-                        image.setImageDrawable(hz1);
-                        break;
-                    case 1:
-                        image.setImageDrawable(hz2);
-                        break;
-                    case 2:
-                        image.setImageDrawable(hz3);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            @Override
-            public int getBannerCount() {
-                return 3;
-            }
-
-            @Override
-            public boolean isLoop() {
-                return true;
+            public void onClick(View v) {
+                drawables.add(jj1);
+                adapter.notifyDataSetChanged();
+                banner.updateBannerAfterDataSetChanged();
             }
         });
-        banner2.startAutoScroll(2000);
+
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawables.remove(0);
+                adapter.notifyDataSetChanged();
+                banner.updateBannerAfterDataSetChanged();
+            }
+        });
     }
 }

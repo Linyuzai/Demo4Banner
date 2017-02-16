@@ -6,6 +6,7 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.view.PagerAdapter;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -15,7 +16,9 @@ import android.widget.RelativeLayout;
 import com.linyuzai.banner.Banner;
 import com.linyuzai.banner.BannerAdapter;
 import com.linyuzai.banner.OnBannerChangeListener;
+import com.linyuzai.banner.OnBannerItemClickListener;
 import com.linyuzai.banner.R;
+import com.linyuzai.banner.ViewLocation;
 import com.linyuzai.banner.ViewUtils;
 import com.linyuzai.banner.indicator.Indicator;
 
@@ -69,7 +72,9 @@ public class HintBanner extends RelativeLayout implements IHintBanner {
             a.recycle();
         }
         mBanner.setId(R.id.banner_id);
-        addView(mBanner);
+        ViewGroup.LayoutParams bannerParams = ViewUtils.newRelativeLayoutParams();
+        bannerParams.height = ViewUtils.MATCH_PARENT;
+        addView(mBanner, bannerParams);
         mBanner.setOnBannerChangeListener(new OnBannerChangeListenerImpl());
     }
 
@@ -92,10 +97,8 @@ public class HintBanner extends RelativeLayout implements IHintBanner {
             setLayoutParams(layoutParams);
         }
         LayoutParams params = ViewUtils.newRelativeLayoutParams();
-        params.bottomMargin = mCreator.getMarginBottom();
-        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        mHintGroup.setLayoutParams(params);
+        ViewLocation location = mCreator.getViewLocation();
+        mHintGroup.setLayoutParams(ViewUtils.getRelativeLayoutParamsFromViewLocation(params, location));
         addView(mHintGroup);
     }
 
@@ -191,6 +194,39 @@ public class HintBanner extends RelativeLayout implements IHintBanner {
     @Override
     public void setAutoDuration(int duration) {
         mBanner.setAutoDuration(duration);
+    }
+
+    @Override
+    public void updateBannerAfterDataSetChanged() {
+        mBanner.updateBannerAfterDataSetChanged();
+        int count = getCompatibleCount();
+        if (mHintGroup == null || count == Banner.NO_ADAPTER)
+            return;
+        int oldCount = mHintGroup.getChildCount();
+        mCreator.onHintReset(mHintGroup.getChildAt(mCurrentPosition));
+        mCurrentPosition = 0;
+        if (count > 0)
+            mCreator.onHintActive(mHintGroup.getChildAt(0));
+        int countDiffer = Math.abs(oldCount - count);
+        for (int i = 1; i <= countDiffer; i++) {
+            if (oldCount > count)
+                mHintGroup.removeView(mHintGroup.getChildAt(oldCount - i));
+            else if (oldCount < count) {
+                View hint = mCreator.getHintView(mHintGroup);
+                mHintGroup.addView(hint);
+                mCreator.onHintReset(hint);
+            }
+        }
+    }
+
+    @Override
+    public void setOnBannerItemClickListener(OnBannerItemClickListener onBannerItemClickListener) {
+        mBanner.setOnBannerItemClickListener(onBannerItemClickListener);
+    }
+
+    @Override
+    public OnBannerItemClickListener getOnBannerItemClickListener() {
+        return mBanner.getOnBannerItemClickListener();
     }
 
     @Override

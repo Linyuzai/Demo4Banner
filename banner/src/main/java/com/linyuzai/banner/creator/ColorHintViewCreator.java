@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.linyuzai.banner.ViewLocation;
 import com.linyuzai.banner.hint.HintViewCreator;
 
 /**
@@ -52,8 +53,8 @@ public abstract class ColorHintViewCreator implements HintViewCreator {
     }
 
     @Override
-    public int getMarginBottom() {
-        return 0;
+    public ViewLocation getViewLocation() {
+        return ViewLocation.getDefaultViewLocation();
     }
 
     /**

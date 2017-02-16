@@ -3,6 +3,8 @@ package com.linyuzai.banner.indicator;
 import android.graphics.Paint;
 import android.view.Gravity;
 
+import com.linyuzai.banner.ViewLocation;
+
 /**
  * Created by Administrator on 2017/2/4 0004.
  *
@@ -22,17 +24,7 @@ public abstract class SimpleCursorCreator implements CursorCreator {
     }
 
     @Override
-    public int getGravity() {
-        return Gravity.BOTTOM;
-    }
-
-    @Override
-    public int getMarginTop() {
-        return 0;
-    }
-
-    @Override
-    public int getMarginBottom() {
-        return 0;
+    public ViewLocation getViewLocation() {
+        return ViewLocation.getDefaultViewLocation();
     }
 }

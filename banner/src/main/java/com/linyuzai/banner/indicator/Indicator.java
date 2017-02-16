@@ -19,8 +19,10 @@ import android.widget.RelativeLayout;
 
 import com.linyuzai.banner.Banner;
 import com.linyuzai.banner.BannerAdapter;
+import com.linyuzai.banner.BannerAdapter2;
 import com.linyuzai.banner.R;
 import com.linyuzai.banner.ViewHolder;
+import com.linyuzai.banner.ViewLocation;
 import com.linyuzai.banner.ViewUtils;
 
 /**
@@ -249,17 +251,8 @@ public class Indicator extends HorizontalScrollView {
             params = new RelativeLayout.LayoutParams((int) mCursor.width, (int) mCursor.height);
         if (DEBUG)
             Log.d(TAG, "cursor.width:" + mCursor.width + ",cursor.height:" + mCursor.height);
-        params.topMargin = creator.getMarginTop();
-        params.bottomMargin = creator.getMarginBottom();
-        //设置为底部
-        if (creator.getGravity() == Gravity.BOTTOM) {
-            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-            //params.topMargin = (int) (mIndicatorHeight - params.bottomMargin - mCursor.height);
-            //params.bottomMargin = 0;
-            if (DEBUG)
-                Log.d(TAG, "getHeight:" + getHeight());
-        }
-        mCursor.setLayoutParams(params);
+        ViewLocation location = creator.getViewLocation();
+        mCursor.setLayoutParams(ViewUtils.getVerticalRelativeLayoutParamsFromViewLocation(params, location));
     }
 
     /**
@@ -277,7 +270,8 @@ public class Indicator extends HorizontalScrollView {
             throw new RuntimeException("The count of banner is "
                     + bannerCount + " and the count of indicator is "
                     + indicatorCount + ",which is different");
-        if (banner.getAdapter() instanceof BannerAdapter && ((BannerAdapter) banner.getAdapter()).isLoop())
+        if (banner.getAdapter() instanceof BannerAdapter && ((BannerAdapter) banner.getAdapter()).isLoop() ||
+                banner.getAdapter() instanceof BannerAdapter2 && ((BannerAdapter2) banner.getAdapter()).isLoop())
             throw new RuntimeException("Indicator is not support loop banner");
     }
 
@@ -352,6 +346,8 @@ public class Indicator extends HorizontalScrollView {
      * @param position 需要切换的position
      */
     public void setCurrentIndicator(int position) {
+        if (mCurrentPosition == position)
+            return;
         if (mOnIndicatorChangeCallback != null) {
             //返回false拦截
             if (mOnIndicatorChangeCallback.interceptBeforeChange(position))

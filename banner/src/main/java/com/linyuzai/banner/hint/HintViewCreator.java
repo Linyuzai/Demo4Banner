@@ -3,6 +3,8 @@ package com.linyuzai.banner.hint;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.linyuzai.banner.ViewLocation;
+
 /**
  * Created by Administrator on 2017/2/4 0004.
  *
@@ -31,7 +33,9 @@ public interface HintViewCreator {
     void onHintReset(View hint);
 
     /**
-     * @return 到底部的距离
+     * 设置HintView的位置
+     *
+     * @return ViewLocation
      */
-    int getMarginBottom();
+    ViewLocation getViewLocation();
 }

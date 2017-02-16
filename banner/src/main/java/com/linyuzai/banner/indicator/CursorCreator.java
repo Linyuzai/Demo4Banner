@@ -2,6 +2,8 @@ package com.linyuzai.banner.indicator;
 
 import android.graphics.Paint;
 
+import com.linyuzai.banner.ViewLocation;
+
 /**
  * Created by Administrator on 2017/2/4 0004.
  *
@@ -32,19 +34,9 @@ public interface CursorCreator {
     Paint.Cap getStyle();
 
     /**
-     * 位置
+     * 设置Cursor的位置
      *
-     * @return Gravity.TOP或者Gravity.BOTTOM
+     * @return ViewLocation
      */
-    int getGravity();
-
-    /**
-     * @return 距离TOP的距离
-     */
-    int getMarginTop();
-
-    /**
-     * @return 距离BOTTOM的距离
-     */
-    int getMarginBottom();
+    ViewLocation getViewLocation();
 }

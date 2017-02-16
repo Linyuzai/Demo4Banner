@@ -19,6 +19,8 @@
         <activity android:name=".HintBannerActivity" />
         <activity android:name=".IndicatorBannerActivity" />
         <activity android:name=".IndicatorBanner2Activity" />
+        <activity android:name=".Banner2Activity" />
+        <activity android:name=".HintBanner2Activity"></activity>
     </application>
 
 </manifest>

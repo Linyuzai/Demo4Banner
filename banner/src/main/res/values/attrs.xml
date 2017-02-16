@@ -4,6 +4,7 @@
         <attr name="banner_interval" format="integer" />
         <attr name="manual_duration" format="integer" />
         <attr name="auto_duration" format="integer" />
+        <attr name="stationary" format="boolean" />
     </declare-styleable>
     <declare-styleable name="HintBanner">
         <attr name="hint_banner_interval" format="integer" />

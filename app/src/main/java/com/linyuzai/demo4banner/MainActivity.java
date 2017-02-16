@@ -9,7 +9,9 @@ import android.widget.Button;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     Button mBannerButton;
+    Button mBanner2Button;
     Button mHintBannerButton;
+    Button mHintBanner2Button;
     Button mIndicatorBannerButton;
     Button mIndicatorBanner2Button;
 
@@ -19,73 +21,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         mBannerButton = (Button) findViewById(R.id.bt_banner);
+        mBanner2Button = (Button) findViewById(R.id.bt_banner2);
         mHintBannerButton = (Button) findViewById(R.id.bt_hint_banner);
+        mHintBanner2Button = (Button) findViewById(R.id.bt_hint_banner2);
         mIndicatorBannerButton = (Button) findViewById(R.id.bt_indicator_banner);
         mIndicatorBanner2Button = (Button) findViewById(R.id.bt_indicator_banner2);
 
         mBannerButton.setOnClickListener(this);
+        mBanner2Button.setOnClickListener(this);
         mHintBannerButton.setOnClickListener(this);
+        mHintBanner2Button.setOnClickListener(this);
         mIndicatorBannerButton.setOnClickListener(this);
         mIndicatorBanner2Button.setOnClickListener(this);
 
-        /*indicator = (Indicator) findViewById(R.id.indicator);
-        indicator.setAdapter(new TextIndicatorAdapter() {
-            @Override
-            public void onBindText(TextView text, int position) {
-
-            }
-
-            @Override
-            public int getIndicatorCount() {
-                return 0;
-            }
-
-        });
-        indicator.setAdapter(new BaseIndicatorAdapter() {
-            @Override
-            public int getIndicatorCount() {
-                return 20;
-            }
-
-            @Override
-            public View getIndicatorView(ViewGroup parent, int position) {
-                TextView text = new TextView(parent.getContext());
-                text.setText(position > 9 ? position + "" : "0" + position);
-                text.setPadding(35, 15, 35, 15);
-                return text;
-            }
-
-            @Override
-            public boolean isFitScreenWidth() {
-                return true;
-            }
-        });
-        indicator.setCursor(new SimpleCursorCreator() {
-            @Override
-            public float getHeight() {
-                return 3;
-            }
-
-            @Override
-            public int getColor() {
-                return Color.BLACK;
-            }
-
-            @Override
-            public int getMarginBottom() {
-                return 0;
-            }
-
-            @Override
-            public float getScale() {
-                return 0.9f;
-            }
-        });
-
-
-
-        indicator.bindBanner(banner);
-        banner.bindIndicator(indicator);*/
     }
 
     @Override
@@ -94,8 +42,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.bt_banner:
                 startActivity(new Intent(MainActivity.this, BannerActivity.class));
                 break;
+            case R.id.bt_banner2:
+                startActivity(new Intent(MainActivity.this, Banner2Activity.class));
+                break;
             case R.id.bt_hint_banner:
                 startActivity(new Intent(MainActivity.this, HintBannerActivity.class));
+                break;
+            case R.id.bt_hint_banner2:
+                startActivity(new Intent(MainActivity.this, HintBanner2Activity.class));
                 break;
             case R.id.bt_indicator_banner:
                 startActivity(new Intent(MainActivity.this, IndicatorBannerActivity.class));

@@ -7,17 +7,14 @@ import android.view.ViewGroup;
 
 import java.util.LinkedList;
 
-
 /**
- * 提供循环播放功能的adapter
- * <p>
- * Created by Administrator on 2017/1/5 0005.
+ * Created by Administrator on 2017/2/14 0014.
  *
  * @author Linyuzai
  */
 
-public abstract class BannerAdapter<VH extends ViewHolder> extends PagerAdapter {
-    private static final String TAG = "BannerAdapter";
+public abstract class BannerAdapter2<VH extends ViewHolder> extends PagerAdapter {
+    private static final String TAG = "BannerAdapter2";
     private static final boolean DEBUG = false;
 
     private LinkedList<ViewHolder> mRecyclerViewHolders = new LinkedList<>();//可重复使用的view
@@ -26,8 +23,8 @@ public abstract class BannerAdapter<VH extends ViewHolder> extends PagerAdapter 
 
     @Override
     public int getCount() {
-        //如果可循环数量的Integer.MAX_VALUE
-        return isLoop() ? Integer.MAX_VALUE : getBannerCount();
+        //如果可循环数量+2
+        return getBannerCount() == 0 ? 0 : (isLoop() ? getBannerCount() + 2 : getBannerCount());
     }
 
     @SuppressWarnings("unchecked")
@@ -40,7 +37,14 @@ public abstract class BannerAdapter<VH extends ViewHolder> extends PagerAdapter 
             mRecyclerViewHolders.removeFirst();
         }
         //获得相对应的position
-        int modifyPosition = getBannerCount() == 0 ? 0 : position % getBannerCount();
+        int modifyPosition = position;
+        if (isLoop()) {
+            if (position == 0)
+                modifyPosition = getBannerCount();
+            else if (position == getBannerCount() + 1)
+                modifyPosition = 1;
+            modifyPosition--;
+        }
         if (DEBUG)
             Log.d(TAG, "instantiateItem->position:" + position + ",modifyPosition:" + modifyPosition);
         //如果holder为空则创建一个
@@ -71,6 +75,11 @@ public abstract class BannerAdapter<VH extends ViewHolder> extends PagerAdapter 
     @Override
     public boolean isViewFromObject(View view, Object object) {
         return view == object;
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        return isChangeless() ? POSITION_UNCHANGED : POSITION_NONE;
     }
 
     /**
@@ -107,6 +116,15 @@ public abstract class BannerAdapter<VH extends ViewHolder> extends PagerAdapter 
         return false;
     }
 
+    /**
+     * 数据是否固定不变，如不变设置true减少消耗
+     *
+     * @return 是否固定不变
+     */
+    public boolean isChangeless() {
+        return false;
+    }
+
     private class OnClickListenerImpl implements View.OnClickListener {
         private int position;
 
@@ -121,3 +139,4 @@ public abstract class BannerAdapter<VH extends ViewHolder> extends PagerAdapter 
         }
     }
 }
+

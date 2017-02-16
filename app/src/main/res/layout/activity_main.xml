@@ -14,10 +14,22 @@
         android:text="Banner" />
 
     <Button
+        android:id="@+id/bt_banner2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Banner2.0" />
+
+    <Button
         android:id="@+id/bt_hint_banner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="HintBanner" />
+
+    <Button
+        android:id="@+id/bt_hint_banner2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="HintBanner2.0" />
 
     <Button
         android:id="@+id/bt_indicator_banner"
