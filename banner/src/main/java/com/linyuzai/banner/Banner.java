@@ -256,7 +256,7 @@ public class Banner extends ViewPager implements IBanner {
     }
 
     private boolean isIgnorePosition(int position) {
-        return isBannerAdapter2() && (position == 0 || position == getAdapter().getCount() - 1);
+        return isBannerAdapter2() && isLoop && (position == 0 || position == getAdapter().getCount() - 1);
     }
 
     @Override
